@@ -29,13 +29,10 @@ app.put('/:db/:collection', function(req, res) {
 // create a new document in a collection
 app.post('/:db/:collection', function(req, res) {
   var doc = req.body;
-  var d = {
-    ts: new Date().getTime(),
-    collection: req.params.collection,
-    doc: doc
-  };
+  doc.collection = req.params.collection;
+  doc.ts = new Date().getTime();
   var db = cloudant.db.use(req.params.db);
-  db.insert(d).pipe(res);
+  db.insert(doc).pipe(res);
 });
 
 // get all docments in a collection, or
@@ -55,13 +52,9 @@ app.get('/:db/:collection', function(req, res) {
     if (!q) {
       q = req.query;
     }
-    var docq = {}
-    Object.keys(q).map(function(k) {
-      docq['doc.' + k] = q[k];
-    })
     var selector = { '$and': [ 
       {collection: req.params.collection},
-      docq ]};
+      q ]};
     db.find({selector: selector}).pipe(res);
   } else {
     // all docs

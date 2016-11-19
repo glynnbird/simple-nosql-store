@@ -14,7 +14,7 @@ node index.js
 ## PUT /db - Create a database
 
 ```sh
-> curl -X PUT http://localhost:3000/animals
+curl -X PUT http://localhost:3000/animals
 ```
 
 ## PUT /db/collection - Create a collection
