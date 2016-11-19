@@ -63,5 +63,5 @@ curl 'http://localhost:3000/animals/dogs?filter=%7B"name":"Mitzie"%7D'
 or simple key value pairs to be AND'd together
 
 ```sh
-curl 'http://localhost:3000/sns/dogs?name=sam&colour=brown'
+curl 'http://localhost:3000/animals/dogs?name=sam&colour=brown'
 ```
