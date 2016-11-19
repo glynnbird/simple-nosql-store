@@ -1,0 +1,28 @@
+{
+  "name": "simple-nosql-store",
+  "version": "1.0.0",
+  "description": "Simple NoSQL Data Store",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glynnbird/simple-nosql-store.git"
+  },
+  "keywords": [
+    "NoSQL",
+    "Database"
+  ],
+  "author": "Glynn Bird <glynn.bird@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/glynnbird/simple-nosql-store/issues"
+  },
+  "homepage": "https://github.com/glynnbird/simple-nosql-store#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cloudant": "^1.6.2",
+    "express": "^4.14.0"
+  }
+}
