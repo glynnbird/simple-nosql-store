@@ -25,13 +25,28 @@ curl -X PUT http://localhost:3000/animals/dogs
 
 ## POST /db/collection - Add a document
 
-Provide a full JSON document like so:
+Provide a full single JSON object like so:
 
 ```sh
 curl -X POST -H 'Content-Type: application/json' -d '{"name": "Mitzie"}' http://localhost:3000/animals/dogs
 ```
 
-or just the key/value pairs:
+or if we need to insert multiple documents, create a JSON array:
+
+```js
+[
+  {"name":"ben","colour":"brown"},
+  {"name":"paul","colour":"white"}
+]
+```
+
+and insert the data in bulk:
+
+```sh
+curl -X POST -H 'Content-type: application/json' -d @dogs.json  http://localhost:3000/animals/dogs
+```
+
+or to create simple JSON objects, just supply key/value pairs:
 
 ```sh
 curl -X POST -d 'name=fred'  http://localhost:3000/animals/dogs

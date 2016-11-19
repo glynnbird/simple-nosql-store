@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var cloudant = require('cloudant')(process.env.COUCH_URL);
 var hash = require('./lib/hash.js');
+var utils = require('./lib/utils.js');
 
 // parse POSTed and PUTed request bodies with application/json mime type
 app.use(bodyParser.json({ limit: '1mb'}));
@@ -29,10 +30,23 @@ app.put('/:db/:collection', function(req, res) {
 // create a new document in a collection
 app.post('/:db/:collection', function(req, res) {
   var doc = req.body;
-  doc.collection = req.params.collection;
-  doc.ts = new Date().getTime();
   var db = cloudant.db.use(req.params.db);
-  db.insert(doc).pipe(res);
+  
+  // if array is supplied, do bulk insert
+  if (utils.isArray(doc)) {
+    doc.map(function(d) {
+      d.collection = req.params.collection;
+      d.ts = new Date().getTime();
+      return d;
+    });
+    db.bulk({docs: doc}).pipe(res);
+  } else {
+    // single insert
+    doc.collection = req.params.collection;
+    doc.ts = new Date().getTime();
+    db.insert(doc).pipe(res);
+  }
+
 });
 
 // get all docments in a collection, or
