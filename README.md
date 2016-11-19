@@ -52,6 +52,14 @@ or to create simple JSON objects, just supply key/value pairs:
 curl -X POST -d 'name=fred'  http://localhost:3000/animals/dogs
 ```
 
+## DELETE /db/collction/id - Delete a document
+
+Delete a document with a known id
+
+```sh
+curl -X DELETE http://localhost:3000/animals/dogs/c976778f8d2b99be6fba29875f945e69
+```
+
 ### GET /db/collection/id - Get a document
 
 Retrieve a single document

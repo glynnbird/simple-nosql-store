@@ -83,6 +83,18 @@ app.get('/:db/:collection/:id', function (req, res) {
   db.get(req.params.id).pipe(res);
 });
 
+// delete a document from a collection
+app.delete('/:db/:collection/:id', function (req,res) {
+  var db = cloudant.db.use(req.params.db);
+  db.get(req.params.id, function(err, data) {
+    if (err) {
+      return res.status(404).send({ok: false, msg: 'document does not exist'});
+    }
+    db.destroy(req.params.id, data._rev).pipe(res);
+  })
+});
+
+
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
