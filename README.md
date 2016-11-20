@@ -68,6 +68,12 @@ Retrieve a single document
 curl http://localhost:3000/animals/dogs/5e12d4307b7420a3766b47cd7e8ac0a8
 ```
 
+or retrieve multiple documents:
+
+```
+curl http://localhost:3000/animals/dogs/docid1,docid2,docid3
+```
+
 ### GET /db/collection - Get all documents in a collection
 
 ```

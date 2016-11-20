@@ -79,9 +79,28 @@ app.get('/:db/:collection', function(req, res) {
 });
 
 // get a singe document from a collection
-app.get('/:db/:collection/:id', function (req, res) {
+app.get('/:db/:collection/*', function (req, res) {
   var db = cloudant.db.use(req.params.db);
-  db.get(req.params.id).pipe(res);
+  var ids = req.params[0].split(',');
+  if (ids.length == 1) {
+    db.get(ids[0]).pipe(res);
+  } else {
+    db.list({keys:ids, include_docs: true}, function(err, data) {
+      if (err) {
+        return res.status(err.statusCode).send({ok: false, msg: err.msg});
+      }
+      var retval = [];
+      data.rows.forEach(function(r) {
+        if (r.doc) {
+          retval.push(r.doc);
+        } else {
+          retval.push({ _id: r.key, _error: r.error});
+        }
+      })
+      res.send(retval);
+    });
+  }
+
 });
 
 // delete a document from a collection
