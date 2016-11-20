@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var cloudant = require('cloudant')(process.env.COUCH_URL);
+var async = require('async');
 var hash = require('./lib/hash.js');
 var utils = require('./lib/utils.js');
 var attempt = require('./lib/attempt.js');
@@ -19,13 +20,57 @@ app.put('/:db', function(req, res) {
   cloudant.db.create(req.params.db).pipe(res);
 });
 
+// get summary of a database
+app.get('/:db', function(req, res) {
+  var db = cloudant.db.use(req.params.db);
+  db.view('count', 'bycollection', {group:true}, function(err, data) {
+    if (err) {
+      return res.send(err.statusCode).send({ok: false, msg: err.msg});
+    }
+    var retval = {};
+    data.rows.forEach(function(r) {
+      retval[r.key] = r.value;
+    });
+    res.send({ok:true, collections: retval});
+  })
+});
+
 // create a collection
 app.put('/:db/:collection', function(req, res) {
   var db = cloudant.db.use(req.params.db);
-  var i = {name:'first-name', type:'json', index:{fields:['collection']}};
-  db.index(i, function(er, response) {
+  async.parallel([
+    // index the database by collection
+    function(done) {
+      var i = {type:'json', index:{fields:['collection']}};
+      db.index(i, done);
+    },
+    // index everything
+    function(done) {
+      var i = { type: 'text', index: {}};
+      db.index(i, done);
+    },
+    // count by collection
+    function(done) {
+      var map = function(doc) {
+        if (doc.collection) {
+          emit(doc.collection, null);
+        }
+      };
+      var ddoc = {
+        _id: '_design/count',
+        views: {
+          bycollection: {
+            map: map.toString(),
+            reduce: '_count'
+          }
+        }
+      };
+      db.insert(ddoc, done);
+    }
+  ], function(err, results) {
     res.send({ ok: true });
-  });
+  })
+
 });
 
 // create a new document in a collection
@@ -57,11 +102,11 @@ app.get('/:db/:collection', function(req, res) {
   if (Object.keys(req.query).length > 0) {
     var q = null;
     // ="{'name':'restheart'}"
-    if (req.query.filter) {
+    if (req.query._filter) {
       try {
-        var q = JSON.parse(req.query.filter);
+        var q = JSON.parse(req.query._filter);
       } catch(e) {
-        res.status(400).send({ok: false, msg: 'filter paramter is not JSON'});
+        res.status(400).send({ok: false, msg: '_filter paramter is not JSON'});
       }
     }
     if (!q) {

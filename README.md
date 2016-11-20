@@ -82,15 +82,21 @@ curl http://localhost:3000/animals/dogs
 
 ### GET /db/collection? - Filter documents in a collection
 
-Passing a selector as the `filter` object parameter
+Passing a selector object as the `_filter` parameter
 
 ```sh
 # filter={"name":"Mitzie"}
-curl 'http://localhost:3000/animals/dogs?filter=%7B"name":"Mitzie"%7D'
+curl 'http://localhost:3000/animals/dogs?_filter=%7B"name":"Mitzie"%7D'
 ```
 
 or simple key value pairs to be AND'd together
 
 ```sh
 curl 'http://localhost:3000/animals/dogs?name=sam&colour=brown'
+```
+
+### GET /db - Get a summary of a database
+
+```sh
+curl 'http://localhost:3000/animals'
 ```
