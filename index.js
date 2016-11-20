@@ -4,6 +4,7 @@ var app = express();
 var cloudant = require('cloudant')(process.env.COUCH_URL);
 var hash = require('./lib/hash.js');
 var utils = require('./lib/utils.js');
+var attempt = require('./lib/attempt.js');
 
 // parse POSTed and PUTed request bodies with application/json mime type
 app.use(bodyParser.json({ limit: '1mb'}));
@@ -85,13 +86,12 @@ app.get('/:db/:collection/:id', function (req, res) {
 
 // delete a document from a collection
 app.delete('/:db/:collection/:id', function (req,res) {
-  var db = cloudant.db.use(req.params.db);
-  db.get(req.params.id, function(err, data) {
+  attempt.del(cloudant, req.params.db, req.params.collection, req.params.id, function(err, data) {
     if (err) {
-      return res.status(404).send({ok: false, msg: 'document does not exist'});
+      return res.status(err.statusCode).send(err);
     }
-    db.destroy(req.params.id, data._rev).pipe(res);
-  })
+    res.send(data);
+  });
 });
 
 
