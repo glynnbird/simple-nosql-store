@@ -1,0 +1,7 @@
+[
+  {"_id":"c1", "name": "Sookie", "dob": "2005-10-04", "colour": "grey"},
+  {"_id":"c2", "name": "Mittens", "dob": "2007-04-22", "colour": "ginger"},
+  {"_id":"c3", "name": "Socks", "dob": "2011-06-02", "colour": "black"},
+  {"_id":"c4", "name": "Mr Muggle", "dob": "2012-01-02", "colour": "black"},
+  {"_id":"c5", "name": "Pip", "dob": "2016-01-15", "colour": "white"}
+]
