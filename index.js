@@ -4,12 +4,15 @@ var app = express();
 var cloudant = require('cloudant')(process.env.COUCH_URL);
 var async = require('async');
 var cfenv = require('cfenv');
+var compression = require('compression');
 var appEnv = cfenv.getAppEnv();
 var hash = require('./lib/hash.js');
 var utils = require('./lib/utils.js');
 var attempt = require('./lib/attempt.js');
 var strip = require('./lib/strip.js');
 
+// gzip responses
+app.use(compression());
 
 // parse POSTed and PUTed request bodies with application/json mime type
 app.use(bodyParser.json({ limit: '1mb'}));
