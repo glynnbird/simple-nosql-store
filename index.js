@@ -28,7 +28,7 @@ var output = function(data, res) {
 var multiCallback = function(res) {
   return function(err, data) {
     if (err) {
-      return res.send(err.statusCode).send({ok: false, msg: err.msg});
+      return res.send(err.statusCode).send({ok: false, msg: err.error});
     }
     if (utils.isArray(data)) {
       output(data, res);
@@ -43,7 +43,7 @@ var multiCallback = function(res) {
 var singleCallback = function(res) {
   return function(err, data) {
     if (err) {
-      return res.send(err.statusCode).send({ok: false, msg: err.msg});
+      return res.send(err.statusCode).send({ok: false, msg: err.error});
     }
     output(data, res);
   }
@@ -93,7 +93,7 @@ app.get('/:db', function(req, res) {
   var db = cloudant.db.use(req.params.db);
   db.view('count', 'bycollection', {group:true}, function(err, data) {
     if (err) {
-      return res.send(err.statusCode).send({ok: false, msg: err.msg});
+      return res.status(err.statusCode).send({ok: false, msg: err.error});
     }
     var retval = {};
     data.rows.forEach(function(r) {
@@ -177,7 +177,7 @@ app.get('/:db/:collection/*', function (req, res) {
   } else {
     db.list({keys:ids, include_docs: true}, function(err, data) {
       if (err) {
-        return res.status(err.statusCode).send({ok: false, msg: err.msg});
+        return res.status(err.statusCode).send({ok: false, msg: err.error});
       }
       var retval = [];
       data.rows.forEach(function(r) {
@@ -198,6 +198,24 @@ app.delete('/:db/:collection/:id', function (req,res) {
   attempt.del(cloudant, req.params.db, req.params.collection, req.params.id, singleCallback(res));
 });
 
+
+// get top-level details
+app.get('/', function(req, res) {
+  cloudant.db.list(function(err, data) {
+    if (err) {
+      return res.send(err.statusCode).send({ok: false, msg: err.error});
+    }
+    data = data.filter(function(v) {
+      return (v !== '_users' && v !== '_replicator');
+    });
+    output(data, res);
+  })
+});
+
+// Catch unknown paths
+app.use(function(req, res, next) {
+  res.status(400).send({ok: false, msg: 'unknown path'})
+});
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
