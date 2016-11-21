@@ -4,6 +4,7 @@
   "description": "Simple NoSQL Data Store",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha"
   },
   "repository": {
@@ -21,7 +22,9 @@
   },
   "homepage": "https://github.com/glynnbird/simple-nosql-store#readme",
   "dependencies": {
+    "async": "^2.1.2",
     "body-parser": "^1.15.2",
+    "cfenv": "^1.0.3",
     "cloudant": "^1.6.2",
     "express": "^4.14.0"
   }

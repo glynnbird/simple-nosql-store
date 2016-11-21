@@ -3,10 +3,13 @@ var bodyParser = require('body-parser');
 var app = express();
 var cloudant = require('cloudant')(process.env.COUCH_URL);
 var async = require('async');
+var cfenv = require('cfenv');
+var appEnv = cfenv.getAppEnv();
 var hash = require('./lib/hash.js');
 var utils = require('./lib/utils.js');
 var attempt = require('./lib/attempt.js');
 var strip = require('./lib/strip.js');
+
 
 // parse POSTed and PUTed request bodies with application/json mime type
 app.use(bodyParser.json({ limit: '1mb'}));
@@ -217,6 +220,6 @@ app.use(function(req, res, next) {
   res.status(400).send({ok: false, msg: 'unknown path'})
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+app.listen(appEnv.port, function () {
+  console.log('Started on ' + appEnv.url)
 })

@@ -1,0 +1,10 @@
+---
+applications:
+- name: simplenosql
+  path: .
+  instances: 1
+  disk_quota: 512M
+  memory: 256M
+  host: simplenosql
+  domain: mybluemix.net
+  command: node index.js
