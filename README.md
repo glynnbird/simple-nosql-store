@@ -52,6 +52,20 @@ or to create simple JSON objects, just supply key/value pairs:
 curl -X POST -d 'name=fred'  http://localhost:3000/animals/dogs
 ```
 
+## POST /db/collection/id - Update a document
+
+Provide a replacement document for hte document id supplied
+
+```sh
+curl -X POST -H 'Content-Type: application/json' -d '{"name": "Mitzie"}' http://localhost:3000/animals/dogs/d1
+```
+
+or supply key/value pairs to make up the replacement document:
+
+```sh
+curl -X POST -d 'name=fred&colour=black'  http://localhost:3000/animals/dogs/d1
+```
+
 ## DELETE /db/collction/id - Delete a document
 
 Delete a document with a known id
