@@ -1,6 +1,9 @@
 # Simple NoSQL Store
 
-A wrapper around Cloudant that smoothes out some edges.
+A wrapper around Cloudant that smoothes out some edges. It simply allows JSON data to be stored in a hierarchy of database/collection/document. The user doesn't have to deal with
+
+- design documents
+- revision tokens
 
 ## Running
 
@@ -11,19 +14,21 @@ export COUCH_URL=https://myusername:mypassword@myhost.cloudant.com
 node index.js
 ```
 
-## PUT /db - Create a database
+## API Reference
+
+### PUT /db - Create a database
 
 ```sh
 curl -X PUT http://localhost:3000/animals
 ```
 
-## PUT /db/collection - Create a collection
+### PUT /db/collection - Create a collection
 
 ```sh
 curl -X PUT http://localhost:3000/animals/dogs
 ```
 
-## POST /db/collection - Add a document
+### POST /db/collection - Add a document
 
 Provide a full single JSON object like so:
 
@@ -52,7 +57,7 @@ or to create simple JSON objects, just supply key/value pairs:
 curl -X POST -d 'name=fred'  http://localhost:3000/animals/dogs
 ```
 
-## POST /db/collection/id - Update a document
+### POST /db/collection/id - Update a document
 
 Provide a replacement document for hte document id supplied
 
@@ -66,7 +71,7 @@ or supply key/value pairs to make up the replacement document:
 curl -X POST -d 'name=fred&colour=black'  http://localhost:3000/animals/dogs/d1
 ```
 
-## DELETE /db/collction/id - Delete a document
+### DELETE /db/collction/id - Delete a document
 
 Delete a document with a known id
 
@@ -114,3 +119,45 @@ curl 'http://localhost:3000/animals/dogs?name=sam&colour=brown'
 ```sh
 curl 'http://localhost:3000/animals'
 ```
+
+## How it works
+
+Cloudant is used as the underlying data store. When a database is created, a database is also created in Cloudant. At the same time we invisibly create the design documents to be able to query the data and aggregate the collection counts.
+
+The concept of a 'collection' is handled by storing the documents like this:
+
+```js
+{
+  "_id": "d4",
+  "_rev": "1-977da55721863d11674b3691d5163f63",
+  "name": "Tilly",
+  "dob": "2015-01-02",
+  "colour": "brown",
+  "collection": "dogs",
+  "ts": 1479725223445
+ }
+ ```
+
+The `collection` and `ts` keys are added by this service and are filtered out (with the `_rev` token) when the user fetches a document.
+
+When the user supplies a query (`?colour=black&name=Tilly`) the app converts the query into a form the Cloudant Query would understand:
+
+```js
+{
+	"$and": [{
+		"collection": "dogs"
+	}, {
+		"colour": "black",
+		"name": "Tilly"
+	}]
+}
+```
+
+Normally Cloudant requires updates and deletes to happen with a supplied _id and _rev pair because Cloudant uses a revision tree to store its documents. We simplify this, only requring the document's id (POST /db/collection/:id or DELETE /db/collection/:id). To achieve this, the app first GETs the document to find its revision token and tries to perform the operation. It will attempt this up to three times, backing off exponentially. We can't guarantee avoiding a conflict, but it does make changes easier for the user.
+
+## To do
+
+- We could implement a conflict resolution algorithm. I am storing a 'ts' timestamp in the document which could be used to establish a winner in the event of a conflict
+- Limiting the numbers of returned documents
+- Sorting of search results
+
