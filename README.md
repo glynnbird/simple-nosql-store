@@ -7,6 +7,8 @@ A wrapper around Cloudant that smoothes out some edges. It simply allows JSON da
 
 <iframe width="853" height="480" src="https://www.youtube.com/embed/gmnOmC_y1yc?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
 
+[![demo](http://img.youtube.com/vi/gmnOmC_y1yc/0.jpg)](http://www.youtube.com/watch?v=gmnOmC_y1yc "Simple NoSQL Store")
+
 ## Running
 
 Set a `COUCH_URL` environment varible and run:
