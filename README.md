@@ -140,6 +140,15 @@ The concept of a 'collection' is handled by storing the documents like this:
 
 The `collection` and `ts` keys are added by this service and are filtered out (with the `_rev` token) when the user fetches a document.
 
+```js
+{
+  "_id": "d4",
+  "name": "Tilly",
+  "dob": "2015-01-02",
+  "colour": "brown"
+ }
+```
+
 When the user supplies a query (`?colour=black&name=Tilly`) the app converts the query into a form the Cloudant Query would understand:
 
 ```js
