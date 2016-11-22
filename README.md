@@ -5,6 +5,8 @@ A wrapper around Cloudant that smoothes out some edges. It simply allows JSON da
 - design documents
 - revision tokens
 
+<iframe width="853" height="480" src="https://www.youtube.com/embed/gmnOmC_y1yc?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+
 ## Running
 
 Set a `COUCH_URL` environment varible and run:
