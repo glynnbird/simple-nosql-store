@@ -22,10 +22,9 @@
   },
   "homepage": "https://github.com/glynnbird/simple-nosql-store#readme",
   "dependencies": {
-    "async": "^2.1.2",
     "body-parser": "^1.15.2",
     "cfenv": "^1.0.3",
-    "cloudant": "^1.6.2",
+    "simplenosql": "1.0.0",
     "compression": "^1.6.2",
     "express": "^4.14.0"
   }
