@@ -17,6 +17,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // https://softinstigate.atlassian.net/wiki/display/RH/API+tutorial#APItutorial-CreateaDatabase
 
+var isArray = function(v) {
+  return (v && v.constructor === Array);
+};
+
 // send data back to the web client
 var send = function(res) {
   return function(data) {
@@ -57,8 +61,17 @@ app.put('/:db/:collection', function(req, res) {
 
 // create a new document in a collection
 app.post('/:db/:collection', function(req, res) {
+  if (isArray(req.body)) {
+    req.body.map(function(d) {
+      if (d && typeof d === 'object') {
+        d.collection = req.params.collection; 
+      }
+      return d;
+    });
+  } else {
+    req.body.collection = req.params.collection; 
+  }
   nosqldb(req.params.db)
-    .collection(req.params.collection)
     .insert(req.body)
     .then(send(res))
     .catch(errHandler(res));
@@ -66,8 +79,8 @@ app.post('/:db/:collection', function(req, res) {
 
 // update a document in a collection
 app.post('/:db/:collection/:id', function(req, res) {
+  req.body.collection = req.params.collection; 
   nosqldb(req.params.db)
-    .collection(req.params.collection)
     .update(req.params.id, req.body)
     .then(send(res))
     .catch(errHandler(res));
@@ -76,8 +89,16 @@ app.post('/:db/:collection/:id', function(req, res) {
 // get all docments in a collection, or
 // filter a collection
 app.get('/:db/:collection', function(req, res) {
+  var thiscollection = { collection: req.params.collection};
+  if (req.query && Object.keys(req.query).length > 0) {
+    req.query = { '$and': [
+       thiscollection,
+       req.query
+    ]};
+  } else {
+    req.query = thiscollection;
+  }
   nosqldb(req.params.db)
-    .collection(req.params.collection)
     .all(req.query)
     .then(send(res))
     .catch(errHandler(res));
@@ -85,9 +106,12 @@ app.get('/:db/:collection', function(req, res) {
 
 // get a singe document from a collection
 app.get('/:db/:collection/*', function (req, res) {
+  var id = req.params[0];
+  if (id.indexOf(',') > 0 ) {
+    id = id.split(',');
+  }
   nosqldb(req.params.db)
-    .collection(req.params.collection)
-    .get(req.params[0])
+    .get(id)
     .then(send(res))
     .catch(errHandler(res));
 });
@@ -95,7 +119,6 @@ app.get('/:db/:collection/*', function (req, res) {
 // delete a document from a collection
 app.delete('/:db/:collection/:id', function (req,res) {
   nosqldb(req.params.db)
-    .collection(req.params.collection)
     .del(req.params.id)
     .then(send(res))
     .catch(errHandler(res));
