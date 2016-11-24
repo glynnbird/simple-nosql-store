@@ -137,12 +137,11 @@ The concept of a 'collection' is handled by storing the documents like this:
   "name": "Tilly",
   "dob": "2015-01-02",
   "colour": "brown",
-  "collection": "dogs",
-  "ts": 1479725223445
+  "collection": "dogs"
  }
  ```
 
-The `collection` and `ts` keys are added by this service and are filtered out (with the `_rev` token) when the user fetches a document.
+The `collection` key is added by this service and is filtered out (with the `_rev` token) when the user fetches a document.
 
 ```js
 {
@@ -170,7 +169,7 @@ Normally Cloudant requires updates and deletes to happen with a supplied _id and
 
 ## To do
 
-- We could implement a conflict resolution algorithm. I am storing a 'ts' timestamp in the document which could be used to establish a winner in the event of a conflict
+- We could implement a conflict resolution algorithm. 
 - Limiting the numbers of returned documents
 - Sorting of search results
 
